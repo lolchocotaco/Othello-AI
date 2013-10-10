@@ -1,0 +1,2 @@
+# Class for disc pieces
+
