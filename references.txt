@@ -1,0 +1,2 @@
+http://inventwithpython.com/makinggames.pdf
+https://github.com/humbhenri/pyOthello
