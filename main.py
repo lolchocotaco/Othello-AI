@@ -4,12 +4,10 @@ from pygame.locals import *
 from classes import *
 from const import *
 
+
 def playGame():
     while True: # Game Loop
-        player = raw_input("Black or white? (b/w")
-        move = raw_input("Input new move")
-
-
+        player = raw_input("Black or white? (b/w)")
 
 
 def testGame():
@@ -18,15 +16,16 @@ def testGame():
     g.updateBoard(b.board)
     # playGame()
     while True:
+        validMoves = b.getValidMoves(BLK)
+        print validMoves
         gridXY = g.getClick()
-        b.putTile(gridXY,BLK)
-        g.updateBoard(b.board)
+        if gridXY in validMoves:
+            b.putTile(gridXY, BLK)
+            g.updateBoard(b.board)
 
     #TODO apply checks before placing tile Call update board after moves (flips included)
 
 if __name__ == "__main__" :
     testGame()
     # drawBoard()
-
-
 
