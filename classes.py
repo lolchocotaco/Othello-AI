@@ -5,6 +5,7 @@ import numpy as np
 import pygame,sys
 from pygame.locals import *
 
+
 class Board:
     def __init__(self):
         self.board = np.zeros((8,8))
@@ -35,15 +36,32 @@ class Board:
         else:
             other = BLK
 
+
         # Check N
+        if n != 0 and self.board[m][n-1] == other:
+            pass
         # Check S
+        if n != 7 and self.board[m][n+1] == other:
+            pass
         # Check W
+        if m != 0 and self.board[m-1][n] == other:
+            pass
         # Check E
+        if m != 7 and self.board[m+1][n] == other:
+            pass
         # Check NW
+        if m != 0 and n != 0 and self.board[m-1][n-1] == other:
+            pass
         # Check NE
-        # Check SE
+        if m != 7 and n != 0 and self.board[m+1][n-1] == other:
+            pass
         # Check SW
-        return [(2, 5)]
+        if m != 0 and n != 7 and self.board[n-1][n+1] == other:
+            pass
+        # Check SE
+        if m != 7 and n != 7 and self.board[m+1][n+1] == other:
+            pass
+        # return [(2, 5)]
 
 
 
