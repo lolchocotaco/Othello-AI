@@ -22,7 +22,11 @@ def testGame():
         b.putTile(gridXY,BLK)
         g.updateBoard(b.board)
 
+    #TODO apply checks before placing tile Call update board after moves (flips included)
+
 if __name__ == "__main__" :
     testGame()
     # drawBoard()
+
+
 
