@@ -14,7 +14,6 @@ class Board:
         self.board[4][3] = BLK
         self.board[3][3] = WHT
         self.board[4][4] = WHT
-        self.validMoves = []
 
     def putTile(self, gridXY, color):
         if self.board[gridXY[0]][gridXY[1]] == EMP:
@@ -28,11 +27,12 @@ class Board:
         for n, row in enumerate(self.board):
             for m, cell in enumerate(row):
                 if cell == color:
-                    moves = moves + self.getMoves(n, m, color)
+                    for dir in range(8):
+                        moves = moves + self.getMoves(n, m, color,dir)
 
         return moves
 
-    def getMoves(self, n, m, color):
+    def getMoves(self, n, m, color, dir):
         if color == BLK:
             other = WHT
         else:
@@ -41,86 +41,48 @@ class Board:
         moveList = []
         row = n
         col = m
-        # Check N
-        if n != 0 and self.board[n-1][m] == other:
-            n -=1
-            while n != 0 and self.board[n][m] == other:
-                if self.board[n-1][m] == EMP:
-                    moveList = moveList + [(n-1, m)]
+
+        if dir == 0:
+            rowI = -1
+            colI = 0
+         # S
+        elif dir == 1:
+            rowI = 1
+            colI = 0
+         # W
+        elif dir == 2:
+            rowI = 0
+            colI =-1
+        # E
+        elif dir == 3:
+            rowI = 0
+            colI = 1
+        # NW
+        elif dir == 4:
+            rowI = -1
+            colI = -1
+        # NE
+        elif dir == 5:
+            rowI = -1
+            colI = 1
+        # SW
+        elif dir == 6:
+            rowI = 1
+            colI = -1
+        # SE
+        elif dir == 7:
+            rowI = 1
+            colI = 1
+
+        if n in range(1,7) and m in range(1,7) and self.board[n+rowI][m+colI] == other:
+            n += rowI
+            m += colI
+            while n in range(1,7) and m in range(1,7) and self.board[n][m] == other:
+                if self.board[n+rowI][m+colI] == EMP:
+                    moveList = moveList + [(n+rowI, m+colI)]
                     break
-                n -=1
-        # Check S
-        n = row
-        if n != 7 and self.board[n+1][m] == other:
-            n +=1
-            while n !=7 and self.board[n][m] == other:
-                if self.board[n+1][m] == EMP:
-                    moveList = moveList + [(n+1, m)]
-                    break
-                n +=1
-        # Check W
-        n = row
-        if m != 0 and self.board[n][m-1] == other:
-            m -=1
-            while m != 0 and self.board[n][m] == other:
-                if self.board[n][m-1] == EMP:
-                    moveList = moveList + [(n, m-1)]
-                    break
-                m -=1
-        # Check E
-        m = col
-        if m != 7 and self.board[n][m+1] == other:
-            m +=1
-            while m != 7 and self.board[n][m] == other:
-                if self.board[n][m+1] == EMP:
-                    moveList = moveList + [(n, m+1)]
-                    break
-                m +=1
-        # Check NW
-        m = col
-        if m != 0 and n != 0 and self.board[n-1][m-1] == other:
-            m -=1
-            n -=1
-            while m != 0 and n!= 0 and self.board[n][m] == other:
-                if self.board[n-1][m-1] == EMP:
-                    moveList = moveList + [(n-1, m-1)]
-                    break
-                n -=1
-                m -=1
-        # Check NE
-        n = row
-        m = col
-        if m != 0 and n != 7 and self.board[n+1][m-1] == other:
-            m -=1
-            n +=1
-            while n != 7 and m != 0 and self.board[n][m] == other:
-                if self.board[n+1][m-1] == EMP:
-                    moveList = moveList + [(n+1, m-1)]
-                    break
-                n +=1
-                m -=1
-        # Check SW
-        n = row
-        m = col
-        if n != 0 and m != 7 and self.board[n-1][m+1] == other:
-            m +=1
-            n -=1
-            while m != 7 and n!= 0 and self.board[n][m] == other:
-                if self.board[n-1][m+1] == EMP:
-                    moveList = moveList + [(n-1, m+1)]
-                    break
-                n +=1
-                m -=1
-        # Check SE
-        if m != 7 and n != 7 and self.board[n+1][m+1] == other:
-            m +=1
-            n +=1
-            while m != 7 and n != 7 and self.board[n][m] == other:
-                if self.board[n+1][m+1] == EMP:
-                    moveList = moveList + [(n+1, m+1)]
-                    break
-                n +=1
-                m +=1
+                n += rowI
+                m += colI
         return moveList
 
     def flip(self,dir,gridXY,color):

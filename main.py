@@ -17,8 +17,9 @@ def testGame():
     # playGame()
     while True:
         validMoves = b.getValidMoves(BLK)
-        gridXY = g.getClick()
-        # print(gridXY)
+        if validMoves: # Only do if there are valid moves
+            gridXY = g.getClick()
+            # print(gridXY)
         if gridXY in validMoves:
             b.putTile(gridXY, BLK)
             b.makeCompMove(WHT)
@@ -28,5 +29,5 @@ def testGame():
 
 if __name__ == "__main__" :
     testGame()
-    # drawBoard()
+
 
