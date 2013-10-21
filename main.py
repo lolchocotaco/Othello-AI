@@ -18,7 +18,7 @@ def testGame():
     while True:
         # Get valid black moves
         validMoves = b.getValidMoves(BLK)
-        g.updateBoard(b.board,b.validMoves[BLK])
+        g.updateBoard(b, BLK)
         # If there are any valid moves get Clicks
         if validMoves:
             gridXY = g.getClick()
@@ -26,14 +26,14 @@ def testGame():
             # If the click is in the valid --> Put tile, and let computer make moves
             if gridXY in validMoves:
                 b.putTile(gridXY, BLK)
-                g.updateBoard(b.board,[])
+                g.updateBoard(b)
                 pygame.time.wait(500)
                 b.makeCompMove(WHT)
-                g.updateBoard(b.board,[])
+                g.updateBoard(b)
         else:
             print("No valid Moves.. you skipped")
             b.makeCompMove(WHT)
-            g.updateBoard(b.board)
+            g.updateBoard(b,WHT)
 
         # TODO Fix game flow. Possibly wrap game in another othello class
 

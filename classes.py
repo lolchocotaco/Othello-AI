@@ -18,6 +18,7 @@ class Board:
         self.validMoves = defaultdict()
         self.validMoves[BLK] = []
         self.validMoves[WHT] =[]
+        self.validMoves[EMP] = []
 
     def putTile(self, gridXY, color):
         if self.board[gridXY[0]][gridXY[1]] == EMP:
@@ -25,7 +26,7 @@ class Board:
             for x in range(8):
                 self.flip(x, gridXY, color)
 
-    def getValidMoves(self, color):
+    def getValidMoves(self,color):
         moves = []
         # Check all elements
         for n, row in enumerate(self.board):
@@ -102,6 +103,8 @@ class Board:
             n += rowI
             m += colI
             while n in range(8) and m in range(8) and self.board[n][m] == other:
+                if n+rowI >7 or m+colI > 7 or n+rowI < 0 or m+colI< 0:
+                    break
                 if self.board[n+rowI][m+colI] == EMP:
                     moveList = moveList + [(n+rowI, m+colI)]
                     break
@@ -186,7 +189,9 @@ class GUI:
         pygame.display.set_caption('Chocotaco Othello')
         pygame.draw.rect(self.display, BG, (self.margin+5, self.margin+5, self.boardWidth, self.boardWidth))
 
-    def updateBoard(self,board,validMoves):
+    def updateBoard(self,boardClass, color=EMP):
+        board = boardClass.board
+        validMoves = boardClass.validMoves[color]
         for n, row in enumerate(board):
             # print(row)
             for m,cell in enumerate(row):
