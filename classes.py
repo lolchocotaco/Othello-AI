@@ -104,7 +104,7 @@ class Board:
                     break
                 n += rowI
                 m += colI
-        return moveList
+        return moveList #TODO fix edge case bugs
 
     def flip(self,dir,gridXY,color):
 

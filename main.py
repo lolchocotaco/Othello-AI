@@ -34,7 +34,7 @@ def testGame():
             b.makeCompMove(WHT)
             g.updateBoard(b.board)
 
-
+        # TODO Fix game flow. Possibly wrap game in another othello class
 
 
         # Check end state
