@@ -17,11 +17,21 @@ def testGame():
     # playGame()
     while True:
         validMoves = b.getValidMoves(BLK)
+        b.checkEnd()
         if validMoves: # Only do if there are valid moves
             gridXY = g.getClick()
             # print(gridXY)
+        else:
+            print("No valid Moves.. you skipped")
+            if b.checkEnd():
+                print("Game ended")
+                pygame.time.wait(5000)
+                pygame.quit()
+                sys.exit()
         if gridXY in validMoves:
             b.putTile(gridXY, BLK)
+            g.updateBoard(b.board)
+            pygame.time.wait(500)
             b.makeCompMove(WHT)
             g.updateBoard(b.board)
 

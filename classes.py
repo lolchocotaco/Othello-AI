@@ -5,6 +5,7 @@ import numpy as np
 import pygame,sys
 from pygame.locals import *
 from random import choice
+from collections import defaultdict
 
 
 class Board:
@@ -14,6 +15,9 @@ class Board:
         self.board[4][3] = BLK
         self.board[3][3] = WHT
         self.board[4][4] = WHT
+        self.validMoves = defaultdict()
+        self.validMoves[BLK] = []
+        self.validMoves[WHT] =[]
 
     def putTile(self, gridXY, color):
         if self.board[gridXY[0]][gridXY[1]] == EMP:
@@ -28,9 +32,17 @@ class Board:
             for m, cell in enumerate(row):
                 if cell == color:
                     for dir in range(8):
-                        moves = moves + self.getMoves(n, m, color,dir)
+                        moves = moves + self.getMoves(n, m, color, dir)
+        self.validMoves[color] = list(set(moves))
+        return self.validMoves[color]
 
-        return moves
+    def checkEnd(self):
+        # print self.validMoves[BLK]
+        # print self.validMoves[WHT]
+        if self.validMoves[BLK] and self.validMoves[WHT]:
+            return False
+        else:
+            return True
 
     def getMoves(self, n, m, color, dir):
         if color == BLK:
@@ -142,8 +154,6 @@ class Board:
             for pos in flipPos:
                 self.board[pos[0]][pos[1]] = color
 
-
-
     def makeCompMove(self,color):
         validMoves = self.getValidMoves(color)
         if validMoves:
@@ -165,7 +175,7 @@ class GUI:
         pygame.draw.rect(self.display, BG, (self.margin+5, self.margin+5, self.boardWidth, self.boardWidth))
 
     def updateBoard(self,board):
-        pygame.time.wait(10)
+
         for n, row in enumerate(board):
             # print(row)
             for m,cell in enumerate(row):
