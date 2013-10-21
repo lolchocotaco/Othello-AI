@@ -95,10 +95,13 @@ class Board:
             rowI = 1
             colI = 1
 
-        if n in range(1, 7) and m in range(1, 7) and self.board[n+rowI][m+colI] == other:
+        if n+rowI >7 or m+colI > 7 or n+rowI < 0 or m+colI< 0:
+            return moveList
+        # TODO fix bug
+        if n in range(8) and m in range(8) and self.board[n+rowI][m+colI] == other:
             n += rowI
             m += colI
-            while n in range(1, 7) and m in range(1, 7) and self.board[n][m] == other:
+            while n in range(8) and m in range(8) and self.board[n][m] == other:
                 if self.board[n+rowI][m+colI] == EMP:
                     moveList = moveList + [(n+rowI, m+colI)]
                     break
@@ -183,12 +186,14 @@ class GUI:
         pygame.display.set_caption('Chocotaco Othello')
         pygame.draw.rect(self.display, BG, (self.margin+5, self.margin+5, self.boardWidth, self.boardWidth))
 
-    def updateBoard(self,board):
-
+    def updateBoard(self,board,validMoves):
         for n, row in enumerate(board):
             # print(row)
             for m,cell in enumerate(row):
                 pygame.draw.rect(self.display, GREEN, (self.margin+self.spaceSize*m+5,self.margin+self.spaceSize*n+5,self.spaceSize-10,self.spaceSize-10))
+                if (n,m) in validMoves:
+                    pygame.draw.rect(self.display, YELLOW, (self.margin+self.spaceSize*m+5,self.margin+self.spaceSize*n+5,self.spaceSize-10,self.spaceSize-10))
+
                 if cell != EMP:
                     pygame.draw.circle(self.display, (cell == BLK)*BLACK+(cell == WHT)*WHITE, (int(self.margin+self.spaceSize*(0.5+m)), int(self.margin+self.spaceSize*(0.5+n))), 35, 0)
         pygame.display.flip()

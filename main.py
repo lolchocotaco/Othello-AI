@@ -13,11 +13,12 @@ def playGame():
 def testGame():
     b = Board()
     g = GUI()
-    g.updateBoard(b.board)
+
     # playGame()
     while True:
         # Get valid black moves
         validMoves = b.getValidMoves(BLK)
+        g.updateBoard(b.board,b.validMoves[BLK])
         # If there are any valid moves get Clicks
         if validMoves:
             gridXY = g.getClick()
@@ -25,10 +26,10 @@ def testGame():
             # If the click is in the valid --> Put tile, and let computer make moves
             if gridXY in validMoves:
                 b.putTile(gridXY, BLK)
-                g.updateBoard(b.board)
+                g.updateBoard(b.board,[])
                 pygame.time.wait(500)
                 b.makeCompMove(WHT)
-                g.updateBoard(b.board)
+                g.updateBoard(b.board,[])
         else:
             print("No valid Moves.. you skipped")
             b.makeCompMove(WHT)
