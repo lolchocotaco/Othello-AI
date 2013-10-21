@@ -4,6 +4,7 @@ from const import *
 import numpy as np
 import pygame,sys
 from pygame.locals import *
+from random import choice
 
 
 class Board:
@@ -16,19 +17,20 @@ class Board:
         self.validMoves = []
 
     def putTile(self, gridXY, color):
-        if self.board[gridXY[1]][gridXY[0]] == EMP:
-            self.board[gridXY[1]][gridXY[0]] = color
+        if self.board[gridXY[0]][gridXY[1]] == EMP:
+            self.board[gridXY[0]][gridXY[1]] = color
+            for x in range(8):
+                self.flip(x, gridXY, color)
 
     def getValidMoves(self, color):
         moves = []
-        moves = [(1, 1), (5, 6)]
         # Check all elements
         for n, row in enumerate(self.board):
             for m, cell in enumerate(row):
                 if cell == color:
                     moves = moves + self.getMoves(n, m, color)
 
-        return set(moves)
+        return moves
 
     def getMoves(self, n, m, color):
         if color == BLK:
@@ -36,33 +38,154 @@ class Board:
         else:
             other = BLK
 
-
+        moveList = []
+        row = n
+        col = m
         # Check N
-        if n != 0 and self.board[m][n-1] == other:
-            pass
+        if n != 0 and self.board[n-1][m] == other:
+            n -=1
+            while n != 0 and self.board[n][m] == other:
+                if self.board[n-1][m] == EMP:
+                    moveList = moveList + [(n-1, m)]
+                    break
+                n -=1
         # Check S
-        if n != 7 and self.board[m][n+1] == other:
-            pass
+        n = row
+        if n != 7 and self.board[n+1][m] == other:
+            n +=1
+            while n !=7 and self.board[n][m] == other:
+                if self.board[n+1][m] == EMP:
+                    moveList = moveList + [(n+1, m)]
+                    break
+                n +=1
         # Check W
-        if m != 0 and self.board[m-1][n] == other:
-            pass
+        n = row
+        if m != 0 and self.board[n][m-1] == other:
+            m -=1
+            while m != 0 and self.board[n][m] == other:
+                if self.board[n][m-1] == EMP:
+                    moveList = moveList + [(n, m-1)]
+                    break
+                m -=1
         # Check E
-        if m != 7 and self.board[m+1][n] == other:
-            pass
+        m = col
+        if m != 7 and self.board[n][m+1] == other:
+            m +=1
+            while m != 7 and self.board[n][m] == other:
+                if self.board[n][m+1] == EMP:
+                    moveList = moveList + [(n, m+1)]
+                    break
+                m +=1
         # Check NW
-        if m != 0 and n != 0 and self.board[m-1][n-1] == other:
-            pass
+        m = col
+        if m != 0 and n != 0 and self.board[n-1][m-1] == other:
+            m -=1
+            n -=1
+            while m != 0 and n!= 0 and self.board[n][m] == other:
+                if self.board[n-1][m-1] == EMP:
+                    moveList = moveList + [(n-1, m-1)]
+                    break
+                n -=1
+                m -=1
         # Check NE
-        if m != 7 and n != 0 and self.board[m+1][n-1] == other:
-            pass
+        n = row
+        m = col
+        if m != 0 and n != 7 and self.board[n+1][m-1] == other:
+            m -=1
+            n +=1
+            while n != 7 and m != 0 and self.board[n][m] == other:
+                if self.board[n+1][m-1] == EMP:
+                    moveList = moveList + [(n+1, m-1)]
+                    break
+                n +=1
+                m -=1
         # Check SW
-        if m != 0 and n != 7 and self.board[n-1][n+1] == other:
-            pass
+        n = row
+        m = col
+        if n != 0 and m != 7 and self.board[n-1][m+1] == other:
+            m +=1
+            n -=1
+            while m != 7 and n!= 0 and self.board[n][m] == other:
+                if self.board[n-1][m+1] == EMP:
+                    moveList = moveList + [(n-1, m+1)]
+                    break
+                n +=1
+                m -=1
         # Check SE
-        if m != 7 and n != 7 and self.board[m+1][n+1] == other:
-            pass
-        # return [(2, 5)]
+        if m != 7 and n != 7 and self.board[n+1][m+1] == other:
+            m +=1
+            n +=1
+            while m != 7 and n != 7 and self.board[n][m] == other:
+                if self.board[n+1][m+1] == EMP:
+                    moveList = moveList + [(n+1, m+1)]
+                    break
+                n +=1
+                m +=1
+        return moveList
 
+    def flip(self,dir,gridXY,color):
+
+        flipPos = []
+        if color == BLK:
+            other = WHT
+        else:
+            other = BLK
+
+        # N
+        if dir == 0:
+            rowI = -1
+            colI = 0
+         # S
+        elif dir == 1:
+            rowI = 1
+            colI = 0
+         # W
+        elif dir == 2:
+            rowI = 0
+            colI =-1
+        # E
+        elif dir == 3:
+            rowI = 0
+            colI = 1
+        # NW
+        elif dir == 4:
+            rowI = -1
+            colI = -1
+        # NE
+        elif dir == 5:
+            rowI = -1
+            colI = 1
+        # SW
+        elif dir == 6:
+            rowI = 1
+            colI = -1
+        # SE
+        elif dir == 7:
+            rowI = 1
+            colI = 1
+
+        #Begin the flipping process
+        row = gridXY[0]
+        col = gridXY[1]
+
+        n = row+rowI
+        m = col+colI
+
+        while n in range(8) and m in range(8) and self.board[n][m] == other:
+            flipPos = flipPos + [(n,m)]
+            n += rowI
+            m += colI
+
+        if n in range(8) and m in range(8) and self.board[n][m] == color:
+            for pos in flipPos:
+                self.board[pos[0]][pos[1]] = color
+
+
+
+    def makeCompMove(self,color):
+        validMoves = self.getValidMoves(color)
+        if validMoves:
+            self.putTile(choice(validMoves), color)
 
 
 class GUI:
@@ -80,7 +203,8 @@ class GUI:
         pygame.draw.rect(self.display, BG, (self.margin+5, self.margin+5, self.boardWidth, self.boardWidth))
 
     def updateBoard(self,board):
-        for n,row in enumerate(board):
+        pygame.time.wait(10)
+        for n, row in enumerate(board):
             # print(row)
             for m,cell in enumerate(row):
                 pygame.draw.rect(self.display, GREEN, (self.margin+self.spaceSize*m+5,self.margin+self.spaceSize*n+5,self.spaceSize-10,self.spaceSize-10))
@@ -101,5 +225,5 @@ class GUI:
 
                     xPos = (mouseX - self.margin)/self.spaceSize
                     yPos = (mouseY - self.margin)/self.spaceSize
-                    return xPos, yPos
+                    return yPos, xPos
 

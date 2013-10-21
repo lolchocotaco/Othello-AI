@@ -17,10 +17,11 @@ def testGame():
     # playGame()
     while True:
         validMoves = b.getValidMoves(BLK)
-        print validMoves
         gridXY = g.getClick()
+        # print(gridXY)
         if gridXY in validMoves:
             b.putTile(gridXY, BLK)
+            b.makeCompMove(WHT)
             g.updateBoard(b.board)
 
     #TODO apply checks before placing tile Call update board after moves (flips included)
