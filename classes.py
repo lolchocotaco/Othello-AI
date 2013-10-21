@@ -37,12 +37,21 @@ class Board:
         return self.validMoves[color]
 
     def checkEnd(self):
-        # print self.validMoves[BLK]
-        # print self.validMoves[WHT]
-        if self.validMoves[BLK] and self.validMoves[WHT]:
+        if self.validMoves[BLK] or self.validMoves[WHT]:
             return False
         else:
             return True
+
+    def getTileCount(self):
+        blkCount = 0
+        whtCount = 0
+        for row in self.board:
+            for cell in row:
+                if cell == BLK:
+                    blkCount += 1
+                elif cell == WHT:
+                    whtCount += 1
+        return blkCount, whtCount
 
     def getMoves(self, n, m, color, dir):
         if color == BLK:
@@ -86,10 +95,10 @@ class Board:
             rowI = 1
             colI = 1
 
-        if n in range(1,7) and m in range(1,7) and self.board[n+rowI][m+colI] == other:
+        if n in range(1, 7) and m in range(1, 7) and self.board[n+rowI][m+colI] == other:
             n += rowI
             m += colI
-            while n in range(1,7) and m in range(1,7) and self.board[n][m] == other:
+            while n in range(1, 7) and m in range(1, 7) and self.board[n][m] == other:
                 if self.board[n+rowI][m+colI] == EMP:
                     moveList = moveList + [(n+rowI, m+colI)]
                     break

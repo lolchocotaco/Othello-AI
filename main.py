@@ -16,24 +16,41 @@ def testGame():
     g.updateBoard(b.board)
     # playGame()
     while True:
+        # Get valid black moves
         validMoves = b.getValidMoves(BLK)
-        b.checkEnd()
-        if validMoves: # Only do if there are valid moves
+        # If there are any valid moves get Clicks
+        if validMoves:
             gridXY = g.getClick()
             # print(gridXY)
+            # If the click is in the valid --> Put tile, and let computer make moves
+            if gridXY in validMoves:
+                b.putTile(gridXY, BLK)
+                g.updateBoard(b.board)
+                pygame.time.wait(500)
+                b.makeCompMove(WHT)
+                g.updateBoard(b.board)
         else:
             print("No valid Moves.. you skipped")
-            if b.checkEnd():
+            b.makeCompMove(WHT)
+            g.updateBoard(b.board)
+
+
+
+
+        # Check end state
+        if b.checkEnd():
                 print("Game ended")
+                tileCount = b.getTileCount()
+                print(tileCount)
+                if tileCount[0] > tileCount[1]:
+                    print("Black wins")
+                elif tileCount[0]< tileCount[1]:
+                    print("White wins")
+                else:
+                    print("Magically a draw")
                 pygame.time.wait(5000)
                 pygame.quit()
                 sys.exit()
-        if gridXY in validMoves:
-            b.putTile(gridXY, BLK)
-            g.updateBoard(b.board)
-            pygame.time.wait(500)
-            b.makeCompMove(WHT)
-            g.updateBoard(b.board)
 
     #TODO apply checks before placing tile Call update board after moves (flips included)
 
