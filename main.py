@@ -1,15 +1,8 @@
 import pygame, sys, time, copy,numpy
 from pygame.locals import *
 
-from classes import *
+from othello import *
 from const import *
-
-
-def testGame():
-    b = Board()
-    g = GUI()
-
-    # playGame()
 
 
 def main():
