@@ -35,11 +35,11 @@ class GUI:
                         menu.draw(1) #here is the Menu class function
                     if event.key == K_RETURN:
                         if menu.get_position() ==0:
-                            return BLK, WHT, False
+                            return ["h", "c"]
                         elif menu.get_position() == 1:
-                            return WHT, BLK, False
+                            return ["c", "h"]
                         elif menu.get_position() == 2:
-                            return BLK, WHT, True
+                            return ["c", "c"]
                         elif menu.get_position() == 3:#here is the Menu class function
                             pygame.display.quit()
                             sys.exit()

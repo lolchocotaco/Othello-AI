@@ -5,18 +5,27 @@ import pygame,sys
 from pygame.locals import *
 from board import Board
 from gui import GUI
+from players import *
 
 class Othello:
     def __init__(self):
         self.g = GUI()
         self.b = Board()
+        self.players =[]
         self.showMenu()
 
     def showMenu(self):
         # input =
-        self.player1, self.player2, noHumans = self.g.getPlayer()
-        if noHumans:
-            print("The computers will battle")
+        players = self.g.getPlayer()
+        if players[0] == "h":
+            self.player[0] = humanPlayer(BLK)
+            self.player[1] = compPlayer(WHT)
+        elif players[1] == "h":
+            self.player[0] = compPlayer(BLK)
+            self.player[1] = humanPlayer(WHT)
+        else:
+            self.player[0] = compPlayer(BLK)
+            self.player[1] = humanPlayer(WHT)
 
         print("LET THE GAMES BEGIN!")
         self.g.showBoard()
@@ -44,7 +53,6 @@ class Othello:
 
             # TODO Fix Game flow
             # Made player class.. Black always goes first
-
 
             # Check end state
             if self.b.checkEnd():
