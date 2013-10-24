@@ -32,6 +32,8 @@ class GUI:
         whtText = self.font.render("White: ", True, WHITE, BLUE)
         self.display.blit(blkText, (self.scorePosB[0]- 70, self.scorePosB[1] ))
         self.display.blit(whtText, (self.scorePosW[0]- 70, self.scorePosW[1] ))
+        # TODO Draw grid
+        pygame.display.flip()
 
 
     def getPlayer(self):
@@ -44,7 +46,7 @@ class GUI:
         info[2] = self.font.render("Make a selection using the ENTER key", True,WHITE)
         info[3] = self.font.render("To specify board layout, make selection using SPACE.", True, WHITE)
         for n,blurb in enumerate(info):
-            self.display.blit(blurb,(75,self.boardWidth/4+32*n))
+            self.display.blit(blurb, (75,self.boardWidth/4+32*n))
         #Time out information
         timeOut = 5
         timeOutLabel = self.font.render("Timeout", True, WHITE)

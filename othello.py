@@ -34,15 +34,7 @@ class Othello:
 
     def setLayout(self):
         while True:
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    pygame.quit()
-                    sys.exit()
-                elif event.type == KEYDOWN:
-                    if event.key == K_SPACE:
-                        pass
-                    else:
-                        pass
+            print(self.g.getClick())
 
     def play(self):
         while True:
