@@ -11,48 +11,43 @@ class Othello:
     def __init__(self):
         self.g = GUI()
         self.b = Board()
-        self.players =[]
+        self.players =[None,None]
         self.showMenu()
 
     def showMenu(self):
         # input =
         players = self.g.getPlayer()
         if players[0] == "h":
-            self.player[0] = humanPlayer(BLK)
-            self.player[1] = compPlayer(WHT)
+            self.players[0] = humanPlayer(BLK,self.g)
+            self.players[1] = compPlayer(WHT,self.g)
         elif players[1] == "h":
-            self.player[0] = compPlayer(BLK)
-            self.player[1] = humanPlayer(WHT)
+            self.players[0] = compPlayer(BLK,self.g)
+            self.players[1] = humanPlayer(WHT,self.g)
         else:
-            self.player[0] = compPlayer(BLK)
-            self.player[1] = humanPlayer(WHT)
-
-        print("LET THE GAMES BEGIN!")
+            self.players[0] = compPlayer(BLK,self.g)
+            self.players[1] = compPlayer(WHT,self.g)
         self.g.showBoard()
+        print("LET THE GAMES BEGIN!")
+
+
 
     def play(self):
         while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
         # Get valid black moves
-            validMoves = self.b.getValidMoves(self.player1)
-            self.g.updateBoard(self.b, self.player1)
-            # If there are any valid moves get Clicks
-            if validMoves:
-                gridXY = self.g.getClick()
-                # print(gridXY)
-                # If the click is in the valid --> Put tile, and let computer make moves
-                if gridXY in validMoves:
-                    self.b.putTile(gridXY, self.player1)
-                    self.g.updateBoard(self.b)
+            for player in self.players:
+                validMoves = self.b.getValidMoves(player.color)  # Get list of valid moves
+                if validMoves:
+                    self.g.updateBoard(self.b, player.color) # Update board to show possible moves
                     pygame.time.wait(500)
-                    self.b.makeCompMove(self.player2)
+                    gridXY = player.getMove(validMoves)
+                    self.b.putTile(gridXY, player.color)
                     self.g.updateBoard(self.b)
-            else:
-                print("No valid Moves.. you skipped")
-                self.b.makeCompMove(self.player2)
-                self.g.updateBoard(self.b, self.player2)
 
             # TODO Fix Game flow
-            # Made player class.. Black always goes first
 
             # Check end state
             if self.b.checkEnd():
