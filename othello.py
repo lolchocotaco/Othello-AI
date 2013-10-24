@@ -34,7 +34,9 @@ class Othello:
 
     def setLayout(self):
         while True:
-            print(self.g.getClick())
+            n, m = self.g.getClick()
+            self.g.putCircle(n,m,BLK)
+            pygame.display.flip()
 
     def play(self):
         while True:
