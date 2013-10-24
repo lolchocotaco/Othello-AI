@@ -1,4 +1,5 @@
 import pygame,sys
+import pygame.gfxdraw
 from pygame.locals import *
 from const import *
 from menu import Menu
@@ -6,7 +7,7 @@ from menu import Menu
 class GUI:
     def __init__(self):
         pygame.init()
-        self.windowSize = 700
+        self.windowSize = 800
         self.spaceSize = 80
         self.boardSize = 8
         self.margin = int((self.windowSize - (self.boardSize * self.spaceSize)) / 2)
@@ -16,11 +17,38 @@ class GUI:
         self.display.fill(GREY)
         pygame.display.set_caption('Chocotaco Othello')
 
+        # font stuff
+        self.font = pygame.font.Font('font/coders_crux.ttf', 32)
+        self.titleFont = pygame.font.Font('font/coders_crux.ttf',64)
+        self.titleFont.set_bold(True)
+        self.scorePosB = (self.windowSize/4, 50 )
+        self.scorePosW = (int(3*self.windowSize/4), 50)
+
+
     def showBoard(self):
         self.display.fill(BLUE)
         pygame.draw.rect(self.display, BG, (self.margin+5, self.margin+5, self.boardWidth, self.boardWidth))
+        blkText = self.font.render("Black: ", True, BLACK, BLUE)
+        whtText = self.font.render("White: ", True, WHITE, BLUE)
+        self.display.blit(blkText, (self.scorePosB[0]- 70, self.scorePosB[1] ))
+        self.display.blit(whtText, (self.scorePosW[0]- 70, self.scorePosW[1] ))
+
 
     def getPlayer(self):
+        # Starting screen text
+        title = self.titleFont.render("Chocotaco Othello",True,DULLYELLOW)
+        self.display.blit(title,(int(self.boardWidth/4),50))
+        info = [None]*3
+        info[0] = self.font.render("Select playing option using the UP & DOWN arrow keys.", True, BLACK)
+        info[1] = self.font.render("Make a selection using the ENTER key", True,BLACK)
+        info[2] = self.font.render("Set computer timeout using the LEFT & RIGHT arrow keys",True, BLACK)
+        for n,blurb in enumerate(info):
+            self.display.blit(blurb,(75,self.boardWidth/4+32*n))
+
+        timeOut = 5
+        timeOutLabel = self.font.render("Timeout", True,BLACK)
+        self.display.blit(timeOutLabel,(int(3*self.windowSize/4)+16, int(self.boardWidth/2)+32))
+        self.showTimeout(timeOut)
         menu = Menu()
         menu.init(['Go First (Black)', 'Go Second (White)','Comp V Comp', 'Quit'], self.display)
         menu.draw()
@@ -29,17 +57,25 @@ class GUI:
         while 1:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
-                    if event.key == K_UP:
+                    if event.key == K_LEFT:
+                        if timeOut >1:
+                            timeOut -= 1
+                            self.showTimeout(timeOut)
+                    elif event.key == K_RIGHT:
+                        if timeOut < 15:
+                            timeOut += 1
+                            self.showTimeout(timeOut)
+                    elif event.key == K_UP:
                         menu.draw(-1) #here is the Menu class function
-                    if event.key == K_DOWN:
+                    elif event.key == K_DOWN:
                         menu.draw(1) #here is the Menu class function
-                    if event.key == K_RETURN:
+                    elif event.key == K_RETURN:
                         if menu.get_position() ==0:
-                            return ["h", "c"]
+                            return ["h", "c"], timeOut
                         elif menu.get_position() == 1:
-                            return ["c", "h"]
+                            return ["c", "h"], timeOut
                         elif menu.get_position() == 2:
-                            return ["c", "c"]
+                            return ["c", "c"], timeOut
                         elif menu.get_position() == 3:#here is the Menu class function
                             pygame.display.quit()
                             sys.exit()
@@ -51,10 +87,16 @@ class GUI:
                     pygame.display.quit()
                     sys.exit()
 
+    def showTimeout(self,timeout):
+        timeOutTxt = self.font.render(str(timeout).rjust(2,'0')+" Seconds",True,LIGHTBLUE,GREY)
+        self.display.blit(timeOutTxt, (int(3*self.windowSize/4), int(self.boardWidth/2)+64))
+
 
     def updateBoard(self,boardClass, color=EMP):
         board = boardClass.board
         validMoves = boardClass.validMoves[color]
+        blkCount = 0
+        whtCount =0
         for n, row in enumerate(board):
             # print(row)
             for m,cell in enumerate(row):
@@ -63,7 +105,18 @@ class GUI:
                     pygame.draw.rect(self.display, YELLOW, (self.margin+self.spaceSize*m+5,self.margin+self.spaceSize*n+5,self.spaceSize-10,self.spaceSize-10))
 
                 if cell != EMP:
-                    pygame.draw.circle(self.display, (cell == BLK)*BLACK+(cell == WHT)*WHITE, (int(self.margin+self.spaceSize*(0.5+m)), int(self.margin+self.spaceSize*(0.5+n))), 35, 0)
+                    blkCount += (cell == BLK)*1
+                    whtCount += (cell == WHT)*1
+                    # pygame.draw.circle(self.display, (cell == BLK)*BLACK+(cell == WHT)*WHITE, (int(self.margin+self.spaceSize*(0.5+m)), int(self.margin+self.spaceSize*(0.5+n))), 35, 0)
+                    # Draw two circles for fun.
+                    pygame.gfxdraw.aacircle(self.display, int(self.margin+self.spaceSize*(0.5+m)), int(self.margin+self.spaceSize*(0.5+n)), 35,  (cell == BLK)*BLACK+(cell == WHT)*WHITE)
+                    pygame.gfxdraw.filled_circle(self.display, int(self.margin+self.spaceSize*(0.5+m)), int(self.margin+self.spaceSize*(0.5+n)), 35,  (cell == BLK)*BLACK+(cell == WHT)*WHITE)
+
+        #Showing score
+        blkScore = self.font.render(str(blkCount).rjust(2,'0'), True, BLACK,BLUE)
+        whtScore = self.font.render(str(whtCount).rjust(2,'0'), True, WHITE,BLUE)
+        self.display.blit(blkScore, self.scorePosB)
+        self.display.blit(whtScore, self.scorePosW)
         pygame.display.flip()
 
     def getClick(self):
@@ -80,3 +133,12 @@ class GUI:
                     xPos = (mouseX - self.margin)/self.spaceSize
                     yPos = (mouseY - self.margin)/self.spaceSize
                     return yPos, xPos
+    def showWinner(self,color):
+        if color == BLK:
+            winnerText = self.font.render("Black Wins!!", True, BLACK,BLUE)
+        elif color == WHT:
+            winnerText = self.font.render("White Wins!!", True, WHITE,BLUE)
+        else:
+            winnerText = self.font.render("Its a DRAW!!", True, GREY,BLUE)
+        self.display.blit(winnerText,(self.boardWidth/2, 50 ))
+        pygame.display.flip()

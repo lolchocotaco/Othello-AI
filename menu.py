@@ -1,5 +1,5 @@
 import pygame
-
+from const import *
 
 # Class was found online.
 # http://www.pygame.org/project-menu_key-2278-.html
@@ -12,9 +12,9 @@ class Menu:
     font = pygame.font.Font
     dest_surface = pygame.Surface
     ilosc_pol = 0
-    bgColor = (51,51,51)
-    textColor =  (255, 255, 153)
-    selectColor = (153,102,255)
+    bgColor = GREY
+    textColor =  DULLYELLOW
+    selectColor =  LIGHTBLUE
     itemSelect = 0
     pastePosition = (0,0)
     menu_width = 0

@@ -21,13 +21,10 @@ class humanPlayer(Player):
 
                     (mouseX, mouseY) = pygame.mouse.get_pos()
                     if mouseX < self.gui.margin or mouseY < self.gui.margin or mouseX > self.gui.margin+self.gui.boardWidth or mouseY > self.gui.margin+self.gui.boardWidth:
-                        print("Continuing")
                         continue
-                    print("clicked")
 
                     xPos = (mouseX - self.gui.margin)/self.gui.spaceSize
                     yPos = (mouseY - self.gui.margin)/self.gui.spaceSize
-                    print(xPos,yPos)
 
                     if (yPos, xPos) in validMoves:
                         return yPos, xPos
