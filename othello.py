@@ -29,7 +29,7 @@ class Othello:
         self.g.showBoard()
         print("LET THE GAMES BEGIN!")
 
-
+# TODO show score and better indication of last move.
 
     def play(self):
         while True:
@@ -46,8 +46,6 @@ class Othello:
                     gridXY = player.getMove(validMoves)
                     self.b.putTile(gridXY, player.color)
                     self.g.updateBoard(self.b)
-
-            # TODO Fix Game flow
 
             # Check end state
             if self.b.checkEnd():

@@ -10,7 +10,6 @@ class Player():
     def getMove(self, validMoves):
         pass
 
-# TODO implement player classes
 class humanPlayer(Player):
     def getMove(self, validMoves):
          while True:  # Game Loop
