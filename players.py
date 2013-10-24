@@ -1,6 +1,7 @@
 import pygame,sys
 from pygame.locals import *
 from random import choice
+from const import *
 
 class Player():
     def __init__(self, color, gui):
@@ -9,6 +10,19 @@ class Player():
 
     def getMove(self, validMoves):
         pass
+
+    def flashTile(self,yPos,xPos):
+        rectCord = self.gui.getSquare(yPos, xPos) # Get coordinates of thr square of the tile
+        #Flash the tile
+        for x in range(2):
+            self.gui.putCircle(yPos, xPos,self.color)
+            pygame.display.update(pygame.Rect(rectCord))
+            pygame.time.wait(100)
+            self.gui.drawTile(yPos,xPos,YELLOW)
+            pygame.display.update(pygame.Rect(rectCord))
+            pygame.time.wait(50)
+        pygame.time.wait(100)
+
 
 class humanPlayer(Player):
     def getMove(self, validMoves):
@@ -27,10 +41,13 @@ class humanPlayer(Player):
                     yPos = (mouseY - self.gui.margin)/self.gui.spaceSize
 
                     if (yPos, xPos) in validMoves:
+                        self.flashTile(yPos,xPos)
                         return yPos, xPos
 
 
 class compPlayer(Player):
     def getMove(self,validMoves):
         if validMoves:
-            return choice(validMoves)
+            yPos,xPos = choice(validMoves)
+            self.flashTile(yPos,xPos)
+            return yPos, xPos

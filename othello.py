@@ -16,7 +16,8 @@ class Othello:
 
     def showMenu(self):
         # input =
-        players, self.timeout = self.g.getPlayer()
+        players, self.timeout,setLayout = self.g.getPlayer()
+        print (setLayout)
         if players[0] == "h":
             self.players[0] = humanPlayer(BLK, self.g)
             self.players[1] = compPlayer(WHT, self.g)
@@ -27,9 +28,21 @@ class Othello:
             self.players[0] = compPlayer(BLK, self.g)
             self.players[1] = compPlayer(WHT, self.g)
         self.g.showBoard()
+        if setLayout:
+            self.setLayout()
         print("LET THE GAMES BEGIN!")
 
-# TODO Better indication of last move.
+    def setLayout(self):
+        while True:
+            for event in pygame.event.get():
+                if event.type == QUIT:
+                    pygame.quit()
+                    sys.exit()
+                elif event.type == KEYDOWN:
+                    if event.key == K_SPACE:
+                        pass
+                    else:
+                        pass
 
     def play(self):
         while True:
@@ -37,17 +50,17 @@ class Othello:
                 if event.type == QUIT:
                     pygame.quit()
                     sys.exit()
-                if event.type == KEYDOWN:
+                elif event.type == KEYDOWN:
                     if event.key == K_ESCAPE:
                         pygame.display.quit()
                         sys.exit()
-        # Get valid black moves
+        # Get valid  moves and make moves
             for player in self.players:
                 validMoves = self.b.getValidMoves(player.color)  # Get list of valid moves
                 if validMoves:
                     self.g.updateBoard(self.b, player.color) # Update board to show possible moves
-                    pygame.time.wait(int((200*self.timeout+500)/7))
                     gridXY = player.getMove(validMoves)
+                    # pygame.time.wait(int((200*self.timeout+500)/7))
                     self.b.putTile(gridXY, player.color)
                     self.g.updateBoard(self.b)
 
