@@ -33,6 +33,7 @@ class Othello:
         print("LET THE GAMES BEGIN!")
 
     def setLayout(self):
+        # TODO Change to load file.
         while True:
             n, m = self.g.getClick()
             self.g.putCircle(n,m,BLK)
