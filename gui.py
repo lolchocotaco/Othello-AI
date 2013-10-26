@@ -36,17 +36,24 @@ class GUI:
         pygame.display.flip()
 
 
+    class returnObject():
+        def __init__(self,players =[],timeOut=5):
+            self.players = players
+            self.timeOut = timeOut
+
     def getPlayer(self):
+
+        rtnObject = self.returnObject()
         # Starting screen text
         title = self.titleFont.render("Chocotaco Othello",True,DULLYELLOW)
         self.display.blit(title,(int(self.boardWidth/4),50))
-        info = [None]*4
+        info = [pygame.Surface]*4
         info[0] = self.font.render("Select playing option using the UP & DOWN arrow keys.", True, WHITE)
         info[1] = self.font.render("Set computer timeout using the LEFT & RIGHT arrow keys",True, WHITE)
         info[2] = self.font.render("Make a selection using the ENTER key", True,WHITE)
-        info[3] = self.font.render("To specify board layout, make selection using SPACE.", True, WHITE)
-        for n,blurb in enumerate(info):
-            self.display.blit(blurb, (75,self.boardWidth/4+32*n))
+        info[3] = self.font.render("Press SPACE to set layout for configuration", True, WHITE)
+        for n, blurb in enumerate(info):
+            self.display.blit(blurb, (75, self.boardWidth/4+32*n))
         #Time out information
         timeOut = 5
         timeOutLabel = self.font.render("Timeout", True, WHITE)
@@ -54,7 +61,7 @@ class GUI:
         self.showTimeout(timeOut)
         #Actual Menu
         menu = Menu()
-        menu.init(['Go First (Black)', 'Go Second (White)','Comp V Comp', 'Quit'], self.display)
+        menu.init(['Go First (Black)', 'Go Second (White)','Comp V Comp','Quit'], self.display)
         menu.draw()
         pygame.key.set_repeat(199,69)
         pygame.display.update()
@@ -75,12 +82,15 @@ class GUI:
                         menu.draw(1) #here is the Menu class function
                     elif event.key == K_RETURN or event.key == K_SPACE:
                         if menu.get_position() == 0:
+                            # rtnObject.players = ["h", "c"]
                             return ["h", "c"], timeOut, (event.key == K_SPACE)
                         elif menu.get_position() == 1:
+                            # rtnObject.players =["c", "h"]
                             return ["c", "h"], timeOut, (event.key == K_SPACE)
                         elif menu.get_position() == 2:
+                            # rtnObject.players =["c", "c"]
                             return ["c", "c"], timeOut, (event.key == K_SPACE)
-                        elif menu.get_position() == 3:#here is the Menu class function
+                        elif menu.get_position() == 4:
                             pygame.display.quit()
                             sys.exit()
                     if event.key == K_ESCAPE:
@@ -135,6 +145,7 @@ class GUI:
     def drawTile(self, n, m, tileColor):
         pygame.draw.rect(self.display, tileColor, (self.margin+self.spaceSize*m+5,self.margin+self.spaceSize*n+5,self.spaceSize-10,self.spaceSize-10))
 
+# Not really used?
     def getClick(self):
         while True:  # Game Loop
             for event in pygame.event.get():
@@ -154,6 +165,7 @@ class GUI:
                     yPos = (mouseY - self.margin)/self.spaceSize
                     return yPos, xPos
 
+# Unused
     def click2Grid(self,gridXY):
         x = gridXY[0]
         y = gridXY[1]

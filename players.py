@@ -17,11 +17,11 @@ class Player():
         for x in range(2):
             self.gui.putCircle(yPos, xPos,self.color)
             pygame.display.update(pygame.Rect(rectCord))
-            pygame.time.wait(100)
+            pygame.time.wait(50)
             self.gui.drawTile(yPos,xPos,YELLOW)
             pygame.display.update(pygame.Rect(rectCord))
             pygame.time.wait(50)
-        pygame.time.wait(100)
+        # pygame.time.wait(100)
 
 
 class humanPlayer(Player):

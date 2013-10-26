@@ -2,22 +2,26 @@
 
 from const import *
 import pygame,sys
+import numpy
 from pygame.locals import *
 from board import Board
 from gui import GUI
 from players import *
+from Tkinter import Tk
+from tkFileDialog import askopenfilename
+
 
 class Othello:
     def __init__(self):
         self.g = GUI()
         self.b = Board()
-        self.players =[None,None]
+        self.players =[None, None]
         self.showMenu()
 
     def showMenu(self):
         # input =
-        players, self.timeout,setLayout = self.g.getPlayer()
-        print (setLayout)
+        players, self.timeOut, setLayout = self.g.getPlayer()
+
         if players[0] == "h":
             self.players[0] = humanPlayer(BLK, self.g)
             self.players[1] = compPlayer(WHT, self.g)
@@ -27,17 +31,29 @@ class Othello:
         else:
             self.players[0] = compPlayer(BLK, self.g)
             self.players[1] = compPlayer(WHT, self.g)
-        self.g.showBoard()
+
         if setLayout:
-            self.setLayout()
+            self.setLayout() # If a valid file isn't seleted the default layout is loaded
+        self.g.showBoard()
         print("LET THE GAMES BEGIN!")
 
     def setLayout(self):
-        # TODO Change to load file.
-        while True:
-            n, m = self.g.getClick()
-            self.g.putCircle(n,m,BLK)
-            pygame.display.flip()
+        Tk().withdraw()
+        filename = askopenfilename()
+        if filename:
+            with open(filename, 'r') as f:
+                board = numpy.genfromtxt(f,
+                                         delimiter=' ',
+                                         skip_footer=2,
+                                         dtype=numpy.int32)
+                self.b.board = board
+
+            with open(filename,'r') as f2:
+                options = numpy.genfromtxt(f2, delimiter=' ', dtype=numpy.int32,usecols=0, skip_header=8)
+                self.timeOut = options[1]
+                if options[0] == 2: # if 1 Black goes first, if 2 then white goes first.
+                    self.players = self.players[::-1]
+
 
     def play(self):
         while True:
@@ -55,9 +71,9 @@ class Othello:
                 if validMoves:
                     self.g.updateBoard(self.b, player.color) # Update board to show possible moves
                     gridXY = player.getMove(validMoves)
-                    # pygame.time.wait(int((200*self.timeout+500)/7))
                     self.b.putTile(gridXY, player.color)
                     self.g.updateBoard(self.b)
+                    pygame.time.wait(int((200*self.timeOut+500)/7))
 
             # Check end state
             if self.b.checkEnd():
