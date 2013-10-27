@@ -132,9 +132,9 @@ class compPlayer(Player):
                 if val < beta:
                     beta = val
                     bestMove = move
-                if beta <=alpha:
+                if beta <= alpha:
                     break
-            return beta, bestMove, time.time()- self.startTime
+            return beta, bestMove, time.time() - self.startTime
 
 
     def evalState(self, board, color):
@@ -147,5 +147,5 @@ class compPlayer(Player):
         edgeCount = board.edgeCount[color]
         moveCount = len(board.getValidMoves(color))
 
-        return tileCount + 10*cornerCount + 3*edgeCount + 2*moveCount
+        return tileCount + 12*cornerCount + 3*edgeCount + 2*moveCount
 
