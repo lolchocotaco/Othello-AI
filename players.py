@@ -4,6 +4,8 @@ from random import choice
 from const import *
 import copy
 import time
+from scipy import optimize
+
 
 class Player():
     def __init__(self, color, gui,board):
@@ -99,7 +101,6 @@ class compPlayer(Player):
                 return bestVal, bestMove, time.time()- self.startTime
 
 
-
     def minimaxWalphaBeta(self, board, color, depth, alpha, beta, maxPlayer, newMove=[]):
         if color == BLK:
             other = WHT
@@ -109,7 +110,7 @@ class compPlayer(Player):
         validMoves = board.getValidMoves(color)
         if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
             # TODO add proper heuristic
-            return board.getTileCount()[tileMap[other]], newMove, time.time() - self.startTime
+            return self.evalState(board, other), newMove, time.time() - self.startTime
         if maxPlayer:
             bestMove = (-1, -1)
             for move in validMoves:
@@ -121,7 +122,7 @@ class compPlayer(Player):
                     bestMove = move
                 if beta <= alpha:
                     break
-            return alpha, bestMove, time.time()- self.startTime
+            return alpha, bestMove, time.time() - self.startTime
         else:
             bestMove = (-1, -1)
             for move in validMoves:
@@ -134,4 +135,17 @@ class compPlayer(Player):
                 if beta <=alpha:
                     break
             return beta, bestMove, time.time()- self.startTime
+
+
+    def evalState(self, board, color):
+        # Check
+        # number of tiles
+        # corner pieces
+        # do you have more validMoves?
+        tileCount = board.getTileCount()[tileMap[color]] # Gets number of tiles
+        cornerCount = board.cornerCount[color]          # gets number of tiles in the corner
+        edgeCount = board.edgeCount[color]
+        moveCount = len(board.getValidMoves(color))
+
+        return tileCount + 10*cornerCount + 3*edgeCount + 2*moveCount
 

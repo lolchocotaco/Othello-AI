@@ -12,8 +12,10 @@ class Board:
         self.board[4][4] = WHT
         self.validMoves = defaultdict()
         self.validMoves[BLK] = []
-        self.validMoves[WHT] =[]
+        self.validMoves[WHT] = []
         self.validMoves[EMP] = []
+        self.cornerCount = defaultdict()
+        self.edgeCount = defaultdict()
 
     def putTile(self, gridXY, color):
         if self.board[gridXY[0]][gridXY[1]] == EMP:
@@ -41,13 +43,36 @@ class Board:
     def getTileCount(self):
         blkCount = 0
         whtCount = 0
-        for row in self.board:
-            for cell in row:
-                if cell == BLK:
-                    blkCount += 1
-                elif cell == WHT:
-                    whtCount += 1
-        return blkCount, whtCount
+        count = defaultdict()
+        count[BLK] = 0
+        count[WHT] = 0
+        self.cornerCount[BLK] = 0
+        self.cornerCount[WHT] = 0
+        self.edgeCount[BLK] = 0
+        self.edgeCount[WHT] = 0
+        for rowNum, row in enumerate(self.board):
+            for colNum, cell in enumerate(row):
+                if cell != EMP:
+                    count[cell] += 1
+                    if colNum == 0 or colNum == 7 or rowNum == 0 or rowNum == 7:
+                        self.edgeCount[cell] += 1
+                    if (rowNum, colNum) in [(0, 0), (0, 7), (7, 7), (7, 0)]:
+                        # print("Corner found {0}-{1}").format(rowNum, colNum)
+                        self.cornerCount[cell] += 1
+
+                # if cell == BLK:
+                #     blkCount += 1
+                    # Do edge and corner checks
+                #     if colNum == 0 or colNum == 7 or rowNum == 0 or rowNum == 7:
+                #         self.edgeCount[BLK] += 1
+                #     if rowNum, colNum in [(0, 0), (0, 7), (7, 7), (7, 0)]:
+                #         print("Corner found")
+                #         self.cornerCount += 1
+                # elif cell == WHT:
+                #     whtCount += 1
+                #     if colNum == 0 or colNum == 7 or rowNum == 0 or rowNum == 7:
+                #         self.cornerCount[WHT] += 1
+        return count[BLK], count[WHT]
 
     def getMoves(self, n, m, color, dir):
         if color == BLK:
