@@ -128,7 +128,7 @@ class compPlayer(Player):
             for move in validMoves:
                 tempBoard = copy.deepcopy(board)
                 tempBoard.putTile(move,color)
-                val = self.minimaxWalphaBeta(tempBoard, other, depth-1,alpha,beta, True, move)[0]
+                val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, True, move)[0]
                 if val < beta:
                     beta = val
                     bestMove = move
@@ -143,9 +143,13 @@ class compPlayer(Player):
         # corner pieces
         # do you have more validMoves?
         tileCount = board.getTileCount()[tileMap[color]] # Gets number of tiles
+        if tileCount == 0:
+            return -HUGE
+        elif tileCount == 64:
+            return HUGE
         cornerCount = board.cornerCount[color]          # gets number of tiles in the corner
         edgeCount = board.edgeCount[color]
         moveCount = len(board.getValidMoves(color))
 
-        return tileCount + 12*cornerCount + 3*edgeCount + 2*moveCount
+        return tileCount + 16*cornerCount + 3*edgeCount + 2*moveCount
 
