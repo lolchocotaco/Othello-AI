@@ -26,8 +26,8 @@ class Othello:
             self.players[0] = humanPlayer(BLK, self.g, self.b)
             self.players[1] = compPlayer(WHT, self.g,  self.b, self.timeOut)
         elif players[1] == "h":
-            self.players[0] = compPlayer(BLK, self.g, self.b)
-            self.players[1] = humanPlayer(WHT, self.g, self.b, self.timeOut)
+            self.players[0] = compPlayer(BLK, self.g, self.b, self.timeOut)
+            self.players[1] = humanPlayer(WHT, self.g, self.b)
         else:
             self.players[0] = compPlayer(BLK, self.g, self.b, self.timeOut)
             self.players[1] = compPlayer(WHT, self.g, self.b, self.timeOut)
