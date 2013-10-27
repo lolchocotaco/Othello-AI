@@ -19,7 +19,7 @@ class Board:
         if self.board[gridXY[0]][gridXY[1]] == EMP:
             self.board[gridXY[0]][gridXY[1]] = color
             for x in range(8):
-                self.flip(x, gridXY, color)
+                self.flip(gridXY, color,x)
 
     def getValidMoves(self, color):
         moves = []
@@ -106,15 +106,13 @@ class Board:
                 m += colI
         return moveList
 
-    def flip(self,dir,gridXY,color):
+    def flip(self,gridXY,color, dir):
 
         flipPos = []
         if color == BLK:
             other = WHT
         else:
             other = BLK
-
-        # N
         if dir == 0:
             rowI = -1
             colI = 0
@@ -155,7 +153,7 @@ class Board:
         m = col+colI
 
         while n in range(8) and m in range(8) and self.board[n][m] == other:
-            flipPos = flipPos + [(n,m)]
+            flipPos = flipPos + [(n, m)]
             n += rowI
             m += colI
 

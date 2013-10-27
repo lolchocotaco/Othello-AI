@@ -23,14 +23,14 @@ class Othello:
         players, self.timeOut, setLayout = self.g.getPlayer()
 
         if players[0] == "h":
-            self.players[0] = humanPlayer(BLK, self.g)
-            self.players[1] = compPlayer(WHT, self.g)
+            self.players[0] = humanPlayer(BLK, self.g, self.b)
+            self.players[1] = compPlayer(WHT, self.g,  self.b, self.timeOut)
         elif players[1] == "h":
-            self.players[0] = compPlayer(BLK, self.g)
-            self.players[1] = humanPlayer(WHT, self.g)
+            self.players[0] = compPlayer(BLK, self.g, self.b)
+            self.players[1] = humanPlayer(WHT, self.g, self.b, self.timeOut)
         else:
-            self.players[0] = compPlayer(BLK, self.g)
-            self.players[1] = compPlayer(WHT, self.g)
+            self.players[0] = compPlayer(BLK, self.g, self.b, self.timeOut)
+            self.players[1] = compPlayer(WHT, self.g, self.b, self.timeOut)
 
         if setLayout:
             self.setLayout() # If a valid file isn't seleted the default layout is loaded
@@ -73,7 +73,7 @@ class Othello:
                     gridXY = player.getMove(validMoves)
                     self.b.putTile(gridXY, player.color)
                     self.g.updateBoard(self.b)
-                    pygame.time.wait(int((200*self.timeOut+500)/7))
+                    # pygame.time.wait(int((200*self.timeOut+500)/7))
 
             # Check end state
             if self.b.checkEnd():
