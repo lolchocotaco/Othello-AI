@@ -3,6 +3,7 @@ from pygame.locals import *
 from random import choice
 from const import *
 import copy
+import time
 
 class Player():
     def __init__(self, color, gui,board):
@@ -56,11 +57,12 @@ class compPlayer(Player):
 
     def getMove(self,validMoves):
         if validMoves:
-
-            yPos,xPos = self.minimax(self.board, self.color, 3, True)[1]
+            self.startTime = time.time()
+            count, move , timeTaken = self.minimax(self.board, self.color, 5, True)
             # yPos, xPos = choice(validMoves)
-            self.flashTile(yPos, xPos)
-            return yPos, xPos
+            print("Time taken: {0}").format(timeTaken)
+            self.flashTile(move[0], move[1])
+            return move
 
     def minimax(self, board, color, depth, maxPlayer, newMove=[]):
         if color == BLK:
@@ -69,8 +71,9 @@ class compPlayer(Player):
             other = BLK
 
         validMoves = board.getValidMoves(color)
-        if depth == 0 or not validMoves:
-            return board.getTileCount()[tileMap[other]], newMove
+        if depth == 0 or not validMoves or time.time()- self.startTime>self.timeOut:
+            # TODO add proper heuristic
+            return board.getTileCount()[tileMap[other]], newMove, time.time() - self.startTime
         if maxPlayer:
             bestVal= -HUGE
             bestMove = (-1, -1)
@@ -81,7 +84,7 @@ class compPlayer(Player):
                 if val > bestVal:
                     bestVal = val
                     bestMove = move
-            return bestVal, bestMove
+            return bestVal, bestMove, time.time()- self.startTime
         else:
             bestVal = HUGE
             bestMove = (-1, -1)
@@ -92,4 +95,4 @@ class compPlayer(Player):
                 if val < bestVal:
                     bestVal = val
                     bestMove = move
-            return bestVal, bestMove
+            return bestVal, bestMove, time.time()- self.startTime
