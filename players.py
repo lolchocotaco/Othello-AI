@@ -61,11 +61,85 @@ class compPlayer(Player):
         if validMoves:
             self.startTime = time.time()
             # count, move , timeTaken = self.minimax(self.board, self.color, 3, True)
-            count, move , timeTaken = self.minimaxWalphaBeta(self.board, self.color, 3, -HUGE, HUGE, True)
+            # count, move , timeTaken = self.minimaxWalphaBeta(self.board, self.color, 3, -HUGE, HUGE, True)
+            depth = 0
+            move = []
+            # Do not look at next depth if more than half of timeout
+            while time.time() - self.startTime < self.timeOut/2.0:
+                depth += 1
+                count, move, timeTaken = self.minimaxWalphaBeta(self.board, self.color, depth, -HUGE, HUGE, True)
+
+            if not move:
+                print("Could not find any moves")
+                sys.exit()
+                pygame.quit()
             # yPos, xPos = choice(validMoves)
-            print("Time taken: {0}").format(timeTaken)
+            print("Time taken: {0} to depth: {1}").format(timeTaken, depth)
             self.flashTile(move[0], move[1])
             return move
+
+    def minimaxWalphaBeta(self, board, color, depth, alpha, beta, maxPlayer, bestMove=[]):
+        if color == BLK:
+            other = WHT
+        else:
+            other = BLK
+
+        validMoves = board.getValidMoves(color)
+        # if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
+        if depth == 0 or not validMoves or time.time()-self.startTime > self.timeOut/2.0:
+            # TODO add proper heuristic
+            return self.evalState(board, other), bestMove, time.time()-self.startTime
+        if maxPlayer:
+            # bestMove = (-1, -1)
+            for move in validMoves:
+                # if time.time() - self.startTime > self.timeOut/2.0:
+                #     return self.evalState(board, other), move, time.time()-self.startTime
+                tempBoard = copy.deepcopy(board)
+                tempBoard.putTile(move, color)
+
+                val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, False, move)[0]
+                # val = self.minimaxWalphaBeta(tempBoard, other, depth+1, alpha, beta, False, move)[0]
+                if val > alpha:
+                    alpha = val
+                    bestMove = move
+                if beta <= alpha:
+                    break
+            return alpha, bestMove, time.time() - self.startTime
+        else:
+            # bestMove = (-1, -1)
+            for move in validMoves:
+                # if time.time() - self.startTime > self.timeOut/2.0:
+                #     return self.evalState(board,other), move, time.time()-self.startTime
+                tempBoard = copy.deepcopy(board)
+                tempBoard.putTile(move, color)
+                val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, True, move)[0]
+                # val = self.minimaxWalphaBeta(tempBoard, other, depth+1, alpha, beta, True, move)[0]
+                if val < beta:
+                    beta = val
+                    bestMove = move
+                if beta <= alpha:
+                    break
+            return beta, bestMove, time.time() - self.startTime
+
+
+    def evalState(self, board, color):
+        # Check
+        # number of tiles
+        # corner pieces
+        # do you have more validMoves?
+        tileCount = board.getTileCount()[tileMap[color]] # Gets number of tiles
+        if tileCount == 0:
+            return -HUGE
+        elif tileCount == 64:
+            return HUGE
+        cornerCount = board.cornerCount[color]          # gets number of tiles in the corner
+        edgeCount = board.edgeCount[color]
+        moveCount = len(board.getValidMoves(color))
+
+        return tileCount + 16*cornerCount + 3*edgeCount + 2*moveCount
+
+
+
 
     def minimax(self, board, color, depth, maxPlayer, newMove=[]):
         if color == BLK:
@@ -74,7 +148,8 @@ class compPlayer(Player):
             other = BLK
 
         validMoves = board.getValidMoves(color)
-        if depth == 0 or not validMoves or time.time()- self.startTime>self.timeOut:
+        # if depth == 0 or not validMoves or time.time()- self.startTime>self.timeOut:
+        if not validMoves or time.time()- self.startTime>self.timeOut:
             # TODO add proper heuristic
             return board.getTileCount()[tileMap[other]], newMove, time.time() - self.startTime
         if maxPlayer:
@@ -101,55 +176,5 @@ class compPlayer(Player):
                 return bestVal, bestMove, time.time()- self.startTime
 
 
-    def minimaxWalphaBeta(self, board, color, depth, alpha, beta, maxPlayer, newMove=[]):
-        if color == BLK:
-            other = WHT
-        else:
-            other = BLK
-
-        validMoves = board.getValidMoves(color)
-        if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
-            # TODO add proper heuristic
-            return self.evalState(board, other), newMove, time.time() - self.startTime
-        if maxPlayer:
-            bestMove = (-1, -1)
-            for move in validMoves:
-                tempBoard = copy.deepcopy(board)
-                tempBoard.putTile(move, color)
-                val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, False, move)[0]
-                if val > alpha:
-                    alpha = val
-                    bestMove = move
-                if beta <= alpha:
-                    break
-            return alpha, bestMove, time.time() - self.startTime
-        else:
-            bestMove = (-1, -1)
-            for move in validMoves:
-                tempBoard = copy.deepcopy(board)
-                tempBoard.putTile(move,color)
-                val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, True, move)[0]
-                if val < beta:
-                    beta = val
-                    bestMove = move
-                if beta <= alpha:
-                    break
-            return beta, bestMove, time.time() - self.startTime
-
-
-    def evalState(self, board, color):
-        # Check
-        # number of tiles
-        # corner pieces
-        # do you have more validMoves?
-        tileCount = board.getTileCount()[tileMap[color]] # Gets number of tiles
-        if tileCount == 0:
-            return -HUGE
-        elif tileCount == 64:
-            return HUGE
-        cornerCount = board.cornerCount[color]          # gets number of tiles in the corner
-        edgeCount = board.edgeCount[color]
-        moveCount = len(board.getValidMoves(color))
-
-        return tileCount + 16*cornerCount + 3*edgeCount + 2*moveCount
+                # def minimaxWalphaBeta(self, board, color, depth, alpha, beta, maxPlayer, newMove=[]):
 

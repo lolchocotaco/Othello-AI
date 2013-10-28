@@ -87,6 +87,7 @@ class Othello:
                         self.g.showWinner(WHT)
                         print("White wins")
                     else:
+                        self.g.showWinner(EMP)
                         print("Magically a draw")
                     pygame.time.wait(5000)
                     pygame.quit()
