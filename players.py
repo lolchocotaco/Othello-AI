@@ -58,25 +58,32 @@ class compPlayer(Player):
         self.timeOut = timeOut
 
     def getMove(self,validMoves):
-        if validMoves:
+        if validMoves: #If only one move, choose it
+            if len(validMoves) == 1:
+                return validMoves[0]
             self.startTime = time.time()
             # count, move , timeTaken = self.minimax(self.board, self.color, 3, True)
             # count, move , timeTaken = self.minimaxWalphaBeta(self.board, self.color, 3, -HUGE, HUGE, True)
             depth = 0
-            move = []
+            bestMove = []
+            score = -HUGE
             # Do not look at next depth if more than half of timeout
             while time.time() - self.startTime < self.timeOut/2.0:
                 depth += 1
                 count, move, timeTaken = self.minimaxWalphaBeta(self.board, self.color, depth, -HUGE, HUGE, True)
+                if score < count and move: # Only save the move if the score is better
+                    score = count
+                    bestMove = move
 
-            if not move:
-                print("Could not find any moves")
+            if not bestMove:
+                print("Could not find any moves  ")
+                print("Program died.... exiting")
                 sys.exit()
                 pygame.quit()
-            # yPos, xPos = choice(validMoves)
-            print("Time taken: {0} to depth: {1}").format(timeTaken, depth)
-            self.flashTile(move[0], move[1])
-            return move
+
+            print("Time taken: {0} to depth: {1}").format(round(timeTaken,2), depth)
+            self.flashTile(bestMove[0], bestMove[1])
+            return bestMove
 
     def minimaxWalphaBeta(self, board, color, depth, alpha, beta, maxPlayer, bestMove=[]):
         if color == BLK:
