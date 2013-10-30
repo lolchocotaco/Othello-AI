@@ -71,7 +71,7 @@ class compPlayer(Player):
             while time.time() - self.startTime < self.timeOut/2.0:
                 depth += 1
                 count, move, timeTaken = self.minimaxWalphaBeta(self.board, self.color, depth, -HUGE, HUGE, True)
-                if score < count and move: # Only save the move if the score is better
+                if move: # Only save the move if the score is better
                     score = count
                     bestMove = move
 
@@ -94,7 +94,7 @@ class compPlayer(Player):
         # keep track of self.color
         validMoves = board.getValidMoves(color)
         # if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
-        if depth == 0 or not validMoves or time.time()-self.startTime > self.timeOut/2.0:
+        if depth == 0 or not validMoves or time.time()-self.startTime > 3*self.timeOut/4.0:
             # TODO add proper heuristic
             # return self.evalState(board, other), bestMove, time.time()-self.startTime
             return self.evalState(board, self.color), bestMove, time.time()-self.startTime
@@ -107,7 +107,6 @@ class compPlayer(Player):
                 tempBoard.putTile(move, color)
 
                 val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, False, move)[0]
-                # val = self.minimaxWalphaBeta(tempBoard, other, depth+1, alpha, beta, False, move)[0]
                 if val > alpha:
                     alpha = val
                     bestMove = move
@@ -122,7 +121,6 @@ class compPlayer(Player):
                 tempBoard = copy.deepcopy(board)
                 tempBoard.putTile(move, color)
                 val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, True, move)[0]
-                # val = self.minimaxWalphaBeta(tempBoard, other, depth+1, alpha, beta, True, move)[0]
                 if val < beta:
                     beta = val
                     bestMove = move
@@ -131,7 +129,7 @@ class compPlayer(Player):
             return beta, bestMove, time.time() - self.startTime
 
 
-    def evalState(self,board,color):
+    def evalState(self, board, color):
         if color == BLK:
             other = WHT
         else:
@@ -148,11 +146,10 @@ class compPlayer(Player):
 
         maxMoveCount = len(board.getValidMoves(color))
         minMoveCount = len(board.getValidMoves(other))
-        if maxMoveCount !=  minMoveCount:
-            scoreMove = 100 * (maxMoveCount - minMoveCount() )/ (maxMoveCount + minMoveCount)
+        if maxMoveCount != minMoveCount:
+            scoreMove = 100 * (maxMoveCount - minMoveCount )/ (maxMoveCount + minMoveCount)
         else:
             scoreMove = 0
-
 
         return scoreDiff + scoreCorner + scoreMove
 
