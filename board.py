@@ -186,6 +186,8 @@ class Board:
             for pos in flipPos:
                 self.board[pos[0]][pos[1]] = color
 
+
+    # Not used
     def makeCompMove(self,color):
         validMoves = self.getValidMoves(color)
         if validMoves:

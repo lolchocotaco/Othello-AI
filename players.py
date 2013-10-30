@@ -76,12 +76,12 @@ class compPlayer(Player):
                     bestMove = move
 
             if not bestMove:
-                print("Could not find any moves  ")
+                print("Could not find any moves, but this shouldn't be happening..")
                 print("Program died.... exiting")
                 sys.exit()
                 pygame.quit()
 
-            print("Time taken: {0} to depth: {1}").format(round(timeTaken,2), depth)
+            print("Time taken: {0} to depth: {1} with score {2}").format(round(timeTaken,2), depth, score)
             self.flashTile(bestMove[0], bestMove[1])
             return bestMove
 
@@ -91,11 +91,13 @@ class compPlayer(Player):
         else:
             other = BLK
 
+        # keep track of self.color
         validMoves = board.getValidMoves(color)
         # if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
         if depth == 0 or not validMoves or time.time()-self.startTime > self.timeOut/2.0:
             # TODO add proper heuristic
-            return self.evalState(board, other), bestMove, time.time()-self.startTime
+            # return self.evalState(board, other), bestMove, time.time()-self.startTime
+            return self.evalState(board, self.color), bestMove, time.time()-self.startTime
         if maxPlayer:
             # bestMove = (-1, -1)
             for move in validMoves:
@@ -129,7 +131,32 @@ class compPlayer(Player):
             return beta, bestMove, time.time() - self.startTime
 
 
-    def evalState(self, board, color):
+    def evalState(self,board,color):
+        if color == BLK:
+            other = WHT
+        else:
+            other = BLK
+
+        tileCount = board.getTileCount()
+        # Piece differential
+        if tileCount[tileMap[color]] != tileCount[tileMap[other]]:
+            scoreDiff = 100 * (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/(tileCount[tileMap[color]] + tileCount[tileMap[color]])
+        else:
+            scoreDiff = 0
+
+        scoreCorner = 100*board.cornerCount[color] - 100*board.cornerCount[other]
+
+        maxMoveCount = len(board.getValidMoves(color))
+        minMoveCount = len(board.getValidMoves(other))
+        if maxMoveCount !=  minMoveCount:
+            scoreMove = 100 * (maxMoveCount - minMoveCount() )/ (maxMoveCount + minMoveCount)
+        else:
+            scoreMove = 0
+
+
+        return scoreDiff + scoreCorner + scoreMove
+
+    def evalState2(self, board, color):
         # Check
         # number of tiles
         # corner pieces
@@ -147,7 +174,7 @@ class compPlayer(Player):
 
 
 
-
+    # bad minimax that no one uses
     def minimax(self, board, color, depth, maxPlayer, newMove=[]):
         if color == BLK:
             other = WHT
