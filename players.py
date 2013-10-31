@@ -71,9 +71,11 @@ class compPlayer(Player):
             while time.time() - self.startTime < self.timeOut/2.0:
                 depth += 1
                 count, move, timeTaken = self.minimaxWalphaBeta(self.board, self.color, depth, -HUGE, HUGE, True)
-                if move: # Only save the move if the score is better
-                    score = count
-                    bestMove = move
+            if move: # Only save the move if the score is better
+                score = count
+                bestMove = move
+            else:
+                print("No move? wth?")
 
             if not bestMove:
                 print("Could not find any moves, but this shouldn't be happening..")
@@ -81,7 +83,7 @@ class compPlayer(Player):
                 sys.exit()
                 pygame.quit()
 
-            print("Time taken: {0} to depth: {1} with score {2}").format(round(timeTaken,2), depth, score)
+            print("Time taken: {0} to depth: {1} with score {2} Move: {3}").format(round(timeTaken,2), depth, score,bestMove)
             self.flashTile(bestMove[0], bestMove[1])
             return bestMove
 
@@ -94,30 +96,24 @@ class compPlayer(Player):
         # keep track of self.color
         validMoves = board.getValidMoves(color)
         # if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
-        if depth == 0 or not validMoves or time.time()-self.startTime > 3*self.timeOut/4.0:
+        if depth == 0 or not validMoves: # or time.time()-self.startTime > 3*self.timeOut/4.0:
             # TODO add proper heuristic
-            # return self.evalState(board, other), bestMove, time.time()-self.startTime
             return self.evalState(board, self.color), bestMove, time.time()-self.startTime
         if maxPlayer:
-            # bestMove = (-1, -1)
             for move in validMoves:
-                # if time.time() - self.startTime > self.timeOut/2.0:
-                #     return self.evalState(board, other), move, time.time()-self.startTime
                 tempBoard = copy.deepcopy(board)
                 tempBoard.putTile(move, color)
-
                 val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, False, move)[0]
                 if val > alpha:
                     alpha = val
                     bestMove = move
                 if beta <= alpha:
                     break
+                    # pass
+                # print("{0}Move {1} with score: {2}").format("\t"*(4-depth),move, alpha)
             return alpha, bestMove, time.time() - self.startTime
         else:
-            # bestMove = (-1, -1)
             for move in validMoves:
-                # if time.time() - self.startTime > self.timeOut/2.0:
-                #     return self.evalState(board,other), move, time.time()-self.startTime
                 tempBoard = copy.deepcopy(board)
                 tempBoard.putTile(move, color)
                 val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, True, move)[0]
@@ -126,6 +122,8 @@ class compPlayer(Player):
                     bestMove = move
                 if beta <= alpha:
                     break
+                    # pass
+                # print("{0}Move {1} with score: {2}").format("\t"*(4-depth),move, beta)
             return beta, bestMove, time.time() - self.startTime
 
 
@@ -137,6 +135,7 @@ class compPlayer(Player):
 
         tileCount = board.getTileCount()
         # Piece differential
+
         if tileCount[tileMap[color]] != tileCount[tileMap[other]]:
             scoreDiff = 100 * (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/(tileCount[tileMap[color]] + tileCount[tileMap[color]])
         else:
@@ -147,11 +146,11 @@ class compPlayer(Player):
         maxMoveCount = len(board.getValidMoves(color))
         minMoveCount = len(board.getValidMoves(other))
         if maxMoveCount != minMoveCount:
-            scoreMove = 100 * (maxMoveCount - minMoveCount )/ (maxMoveCount + minMoveCount)
+            scoreMove = 100 * (maxMoveCount - minMoveCount)/(maxMoveCount + minMoveCount)
         else:
             scoreMove = 0
 
-        return scoreDiff + scoreCorner + scoreMove
+        return scoreDiff + 50 * scoreCorner + scoreMove
 
     def evalState2(self, board, color):
         # Check
