@@ -70,12 +70,11 @@ class compPlayer(Player):
             # Do not look at next depth if more than half of timeout
             while time.time() - self.startTime < self.timeOut/2.0:
                 depth += 1
-                count, move, timeTaken = self.minimaxWalphaBeta(self.board, self.color, depth, -HUGE, HUGE, True)
-            if move: # Only save the move if the score is better
-                score = count
-                bestMove = move
-            else:
-                print("No move? wth?")
+                count, move, timeTaken= self.minimaxWalphaBeta(self.board, self.color, depth, -HUGE, HUGE, True)
+                if move: # if there is no move, the last depth didn't return anything nice.
+                    score = count
+                    bestMove = move
+
 
             if not bestMove:
                 print("Could not find any moves, but this shouldn't be happening..")
@@ -96,6 +95,8 @@ class compPlayer(Player):
         # keep track of self.color
         validMoves = board.getValidMoves(color)
         # if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
+        if time.time() - self.startTime > 7*self.timeOut/8.0:
+            return -HUGE, [], 0
         if depth == 0 or not validMoves: # or time.time()-self.startTime > 3*self.timeOut/4.0:
             # TODO add proper heuristic
             return self.evalState(board, self.color), bestMove, time.time()-self.startTime
