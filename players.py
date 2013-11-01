@@ -23,13 +23,17 @@ class Player():
             self.gui.putCircle(yPos, xPos,self.color)
             pygame.display.update(pygame.Rect(rectCord))
             pygame.time.wait(100)
-            self.gui.drawTile(yPos,xPos,YELLOW)
+            self.gui.drawTile(yPos,xPos,GREEN)
             pygame.display.update(pygame.Rect(rectCord))
             pygame.time.wait(100)
         # pygame.time.wait(100)
 
 
 class humanPlayer(Player):
+    def __init__(self, color, gui, board):
+        Player.__init__(self, color, gui, board)
+        self.isBot = False
+
     def getMove(self, validMoves):
         while True:  # Game Loop
             for event in pygame.event.get():
@@ -52,10 +56,9 @@ class humanPlayer(Player):
 
 class compPlayer(Player):
     def __init__(self, color, gui, board, timeOut):
-        self.color = color
-        self.gui = gui
-        self.board = board
+        Player.__init__(self, color, gui, board)
         self.timeOut = timeOut
+        self.isBot = True
 
     def getMove(self,validMoves):
         if validMoves: #If only one move, choose it
@@ -71,10 +74,9 @@ class compPlayer(Player):
             while time.time() - self.startTime < self.timeOut/2.0:
                 depth += 1
                 count, move, timeTaken= self.minimaxWalphaBeta(self.board, self.color, depth, -HUGE, HUGE, True)
-                if move: # if there is no move, the last depth didn't return anything nice.
+                if move and count> score: # Need to check count because partial check of last depth would return a bad value
                     score = count
                     bestMove = move
-
 
             if not bestMove:
                 print("Could not find any moves, but this shouldn't be happening..")
@@ -82,7 +84,7 @@ class compPlayer(Player):
                 sys.exit()
                 pygame.quit()
 
-            print("Time taken: {0} to depth: {1} with score {2} Move: {3}").format(round(timeTaken,2), depth, score,bestMove)
+            print("Time taken: {0} to depth: {1} with score {2}").format(round(timeTaken,2), depth, round(score,2))
             self.flashTile(bestMove[0], bestMove[1])
             return bestMove
 
@@ -138,7 +140,7 @@ class compPlayer(Player):
         # Piece differential
 
         if tileCount[tileMap[color]] != tileCount[tileMap[other]]:
-            scoreDiff = 100 * (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/(tileCount[tileMap[color]] + tileCount[tileMap[color]])
+            scoreDiff = 100 * (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/(1.0*(tileCount[tileMap[color]] + tileCount[tileMap[other]]))
         else:
             scoreDiff = 0
 
@@ -147,7 +149,7 @@ class compPlayer(Player):
         maxMoveCount = len(board.getValidMoves(color))
         minMoveCount = len(board.getValidMoves(other))
         if maxMoveCount != minMoveCount:
-            scoreMove = 100 * (maxMoveCount - minMoveCount)/(maxMoveCount + minMoveCount)
+            scoreMove = 100 * (maxMoveCount - minMoveCount)/(1.0*(maxMoveCount + minMoveCount))
         else:
             scoreMove = 0
 

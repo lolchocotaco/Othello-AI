@@ -106,7 +106,7 @@ class GUI:
         self.display.blit(timeOutTxt, (int(3*self.windowSize/4), int(self.boardWidth/2)+64))
 
 
-    def updateBoard(self,boardClass, color=EMP):
+    def updateBoard(self,boardClass, color=EMP,isBot=False):
         board = boardClass.board
         validMoves = boardClass.validMoves[color]
         blkCount = 0
@@ -116,7 +116,7 @@ class GUI:
             for m,cell in enumerate(row):
                 # pygame.draw.rect(self.display, GREEN, (self.margin+self.spaceSize*m+5,self.margin+self.spaceSize*n+5,self.spaceSize-10,self.spaceSize-10))
                 self.drawTile(n,m,GREEN)
-                if (n, m) in validMoves:
+                if (n, m) in validMoves and not isBot:
                     # pygame.draw.rect(self.display, YELLOW, (self.margin+self.spaceSize*m+5,self.margin+self.spaceSize*n+5,self.spaceSize-10,self.spaceSize-10))
                     self.drawTile(n,m,YELLOW)
 

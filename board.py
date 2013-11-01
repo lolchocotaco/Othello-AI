@@ -2,6 +2,7 @@ from random import choice
 import numpy as np
 from const import *
 from collections import defaultdict
+import itertools
 
 class Board:
     def __init__(self):
@@ -24,15 +25,22 @@ class Board:
                 self.flip(gridXY, color,x)
 
     def getValidMoves(self, color):
-        moves = []
-        # Check all elements
-        for n, row in enumerate(self.board):
-            for m, cell in enumerate(row):
-                if cell == color:
-                    for dir in range(8):
-                        moves = moves + self.getMoves(n, m, color, dir)
-        self.validMoves[color] = list(set(moves))
+        moves = [self.getMoves(pos,pos2,cell) for (pos, pos2), cell in np.ndenumerate(self.board) if cell == color]
+        self.validMoves[color] = list(itertools.chain(*moves))
         return self.validMoves[color]
+
+    # def getValidMoves(self, color):
+    #     moves = []
+    #     # Check all elements
+    #     for n, row in enumerate(self.board):
+    #         for m, cell in enumerate(row):
+    #             if cell == color:
+    #                 for dir in range(8):
+    #                     moves = moves + self.getMoves(n, m, color, dir)
+    #     self.validMoves[color] = list(set(moves))
+    #     return self.validMoves[color]
+
+
 
     def checkEnd(self):
         if self.validMoves[BLK] or self.validMoves[WHT]:
@@ -74,61 +82,32 @@ class Board:
                 #         self.cornerCount[WHT] += 1
         return count[BLK], count[WHT]
 
-    def getMoves(self, n, m, color, dir):
+    def getMoves(self, n, m, color):
         if color == BLK:
             other = WHT
         else:
             other = BLK
-
         moveList = []
         row = n
         col = m
 
-        if dir == 0:
-            rowI = -1
-            colI = 0
-         # S
-        elif dir == 1:
-            rowI = 1
-            colI = 0
-         # W
-        elif dir == 2:
-            rowI = 0
-            colI =-1
-        # E
-        elif dir == 3:
-            rowI = 0
-            colI = 1
-        # NW
-        elif dir == 4:
-            rowI = -1
-            colI = -1
-        # NE
-        elif dir == 5:
-            rowI = -1
-            colI = 1
-        # SW
-        elif dir == 6:
-            rowI = 1
-            colI = -1
-        # SE
-        elif dir == 7:
-            rowI = 1
-            colI = 1
-
-        if n+rowI >7 or m+colI > 7 or n+rowI < 0 or m+colI< 0:
-            return moveList
-        if n in range(8) and m in range(8) and self.board[n+rowI][m+colI] == other:
-            n += rowI
-            m += colI
-            while n in range(8) and m in range(8) and self.board[n][m] == other:
+        for rowI in [-1, 0, 1]:
+            for colI in [-1, 0 ,1]:
+                n = row
+                m = col
                 if n+rowI >7 or m+colI > 7 or n+rowI < 0 or m+colI< 0:
-                    break
-                if self.board[n+rowI][m+colI] == EMP:
-                    moveList = moveList + [(n+rowI, m+colI)]
-                    break
-                n += rowI
-                m += colI
+                    continue
+                if n in range(8) and m in range(8) and self.board[n+rowI][m+colI] == other:
+                    n += rowI
+                    m += colI
+                    while n in range(8) and m in range(8) and self.board[n][m] == other:
+                        if n+rowI >7 or m+colI > 7 or n+rowI < 0 or m+colI< 0:
+                            break
+                        if self.board[n+rowI][m+colI] == EMP:
+                            moveList = moveList + [(n+rowI, m+colI)]
+                            break
+                        n += rowI
+                        m += colI
         return moveList
 
     def flip(self,gridXY,color, dir):
