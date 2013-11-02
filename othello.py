@@ -1,5 +1,3 @@
-# Class for board
-
 from const import *
 import pygame,sys
 import numpy
@@ -68,6 +66,7 @@ class Othello:
         # Get valid  moves and make moves
             for player in self.players:
                 validMoves = self.b.getValidMoves(player.color)  # Get list of valid moves
+                print validMoves
                 if validMoves:
                     self.g.updateBoard(self.b, player.color, player.isBot) # Update board to show possible moves
                     gridXY = player.getMove(validMoves)
