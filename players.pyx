@@ -10,10 +10,6 @@ cimport cython
 
 
 
-
-
-
-
 class Player:
 
     def __init__(self, int color, gui,board):
@@ -142,7 +138,9 @@ class compPlayer(Player):
             return beta, bestMove, time.time() - self.startTime
 
 
-    def evalState(self, board, color):
+    def evalState(self, board, int color):
+        cdef int other, scoreCorner, maxMoveCount, minMoveCount, scoreCornerClose
+        cdef float scoreDiff, scoreMove
         if color == BLK:
             other = WHT
         else:
@@ -152,36 +150,22 @@ class compPlayer(Player):
         # Piece differential
 
         if tileCount[tileMap[color]] != tileCount[tileMap[other]]:
-            scoreDiff = 100 * (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/(1.0*(tileCount[tileMap[color]] + tileCount[tileMap[other]]))
+            scoreDiff = 100* (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/ (1.0*((tileCount[tileMap[color]] + tileCount[tileMap[other]] )))
         else:
             scoreDiff = 0
 
-        scoreCorner = 100*board.cornerCount[color] - 100*board.cornerCount[other]
+        scoreCorner = 25*(board.cornerCount[color] - board.cornerCount[other])
 
+        scoreCornerClose = -12.5*(board.cornerClose[color] - board.cornerCount[other])
         maxMoveCount = len(board.getValidMoves(color))
         minMoveCount = len(board.getValidMoves(other))
         if maxMoveCount != minMoveCount:
-            scoreMove = 100 * (maxMoveCount - minMoveCount)/(1.0*(maxMoveCount + minMoveCount))
+            scoreMove = 100 * (maxMoveCount - minMoveCount)/1.0*(maxMoveCount + minMoveCount)
         else:
             scoreMove = 0
 
-        return scoreDiff + 50 * scoreCorner + scoreMove
 
-    def evalState2(self, board, color):
-        # Check
-        # number of tiles
-        # corner pieces
-        # do you have more validMoves?
-        tileCount = board.getTileCount()[tileMap[color]] # Gets number of tiles
-        if tileCount == 0:
-            return -HUGE
-        elif tileCount == 64:
-            return HUGE
-        cornerCount = board.cornerCount[color]          # gets number of tiles in the corner
-        edgeCount = board.edgeCount[color]
-        moveCount = len(board.getValidMoves(color))
-
-        return tileCount + 16*cornerCount + 3*edgeCount + 2*moveCount
+        return scoreDiff + scoreCorner + scoreMove+ scoreCornerClose
 
 
 
