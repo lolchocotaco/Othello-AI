@@ -6,6 +6,7 @@ import copy
 import time
 import cython
 cimport cython
+import random
 # from cython cimport bool
 
 
@@ -63,6 +64,13 @@ class compPlayer(Player):
         Player.__init__(self, color, gui, board)
         self.timeOut = timeOut
         self.isBot = True
+        self.weightMat = [
+                    [100, 100], # Piece differential
+                    [300,300], # Corner
+                    [12.5, 12.5], # CornerClose
+                    [100, 100] # Move Count
+                    ]
+
 
     def getMove(self,validMoves):
         if validMoves: #If only one move, choose it
@@ -105,7 +113,7 @@ class compPlayer(Player):
         # keep track of self.color
         validMoves = board.getValidMoves(color)
         # if depth == 0 or not validMoves or time.time() - self.startTime > self.timeOut:
-        if time.time() - self.startTime > 7*self.timeOut/8.0:
+        if time.time() - self.startTime > 7*self.timeOut/8:
             return -HUGE, [], 0
         if depth == 0 or not validMoves: # or time.time()-self.startTime > 3*self.timeOut/4.0:
             # TODO add proper heuristic
@@ -116,6 +124,9 @@ class compPlayer(Player):
                 tempBoard.putTile(move, color)
                 val = self.minimaxWalphaBeta(tempBoard, other, depth-1, alpha, beta, False, move)[0]
                 if val > alpha:
+                    alpha = val
+                    bestMove = move
+                if val == alpha and random.random() < 1/(1.0*depth+1.0):
                     alpha = val
                     bestMove = move
                 if beta <= alpha:
@@ -131,6 +142,9 @@ class compPlayer(Player):
                 if val < beta:
                     beta = val
                     bestMove = move
+                if val == beta and random.random() > 1/(1.0*depth+1.0):
+                    beta = val
+                    bestMove = move
                 if beta <= alpha:
                     break
                     # pass
@@ -141,33 +155,36 @@ class compPlayer(Player):
     def evalState(self, board, int color):
         cdef int other, scoreCorner, maxMoveCount, minMoveCount, scoreCornerClose
         cdef float scoreDiff, scoreMove
+
         if color == BLK:
             other = WHT
         else:
             other = BLK
 
         tileCount = board.getTileCount()
-        # Piece differential
+        gameWeights = map(self.findWeight(sum(tileCount)), self.weightMat)
 
         if tileCount[tileMap[color]] != tileCount[tileMap[other]]:
-            scoreDiff = 100* (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/ (1.0*((tileCount[tileMap[color]] + tileCount[tileMap[other]] )))
+            scoreDiff = gameWeights[0] * (tileCount[tileMap[color]] - tileCount[tileMap[other]] )/ (1.0*(tileCount[tileMap[color]] + tileCount[tileMap[other]] ))
         else:
             scoreDiff = 0
 
-        scoreCorner = 25*(board.cornerCount[color] - board.cornerCount[other])
+        scoreCorner = gameWeights[1]*(board.cornerCount[color] - board.cornerCount[other])
 
-        scoreCornerClose = -12.5*(board.cornerClose[color] - board.cornerCount[other])
+        scoreCornerClose = -gameWeights[2]*(board.cornerClose[color] - board.cornerCount[other])
+
         maxMoveCount = len(board.getValidMoves(color))
         minMoveCount = len(board.getValidMoves(other))
         if maxMoveCount != minMoveCount:
-            scoreMove = 100 * (maxMoveCount - minMoveCount)/1.0*(maxMoveCount + minMoveCount)
+            scoreMove = gameWeights[3] * (maxMoveCount - minMoveCount)/(1.0*(maxMoveCount + minMoveCount))
         else:
             scoreMove = 0
+        return scoreDiff + scoreCorner + scoreCornerClose + scoreMove
 
-
-        return scoreDiff + scoreCorner + scoreMove+ scoreCornerClose
-
-
+    def findWeight(self, int tileCount ):
+        def lineMaker(thresh):
+            return (thresh[1]-thresh[0])/60.0*(tileCount-34) + (thresh[1]+thresh[0])/2.0
+        return lineMaker
 
     # bad minimax that no one uses
     def minimax(self, board, color, depth, maxPlayer, newMove=[]):

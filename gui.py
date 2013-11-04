@@ -69,7 +69,7 @@ class GUI:
             for event in pygame.event.get():
                 if event.type == KEYDOWN:
                     if event.key == K_LEFT:
-                        if timeOut >1:
+                        if timeOut >2:
                             timeOut -= 1
                             self.showTimeout(timeOut)
                     elif event.key == K_RIGHT:
