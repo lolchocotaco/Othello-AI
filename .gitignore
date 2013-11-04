@@ -3,6 +3,9 @@
 # C extensions
 *.so
 
+#Cython files
+.html
+
 # Packages
 *.egg
 *.egg-info
