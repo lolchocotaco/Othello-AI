@@ -8,7 +8,7 @@ Uses
 * numpy
 * cython
 
-Make sure pygames (http://www.pygame.org/install.html), numpy (http://www.scipy.org/install.html), and cython[optional] (http://cython.org/#download).
+Make sure pygames (http://www.pygame.org/install.html), numpy (http://www.scipy.org/install.html), and cython (http://cython.org/#download (optional)
 
 To run the program run:
     python main.py
